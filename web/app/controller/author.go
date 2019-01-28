@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
-func authorListHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "NOT IMPLEMENTED")
+// Authors GET authors list
+func Authors(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "NOT IMPLEMENTED AUTHORS/")
 }
