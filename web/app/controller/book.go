@@ -3,12 +3,20 @@ package controller
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+
+	"../model"
 )
 
 // GetBooks books list
 func GetBooks(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "NOT IMPLEMENTED BOOKS")
+	books := model.GetBooks()
+	t, err := template.ParseFiles("./web/template/book-list.html")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	t.Execute(w, books)
 }
 
 // CreateBook handle create book

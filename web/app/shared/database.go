@@ -10,14 +10,13 @@ import (
 var database *sql.DB
 
 // Connect to db
-func Connect(dataSourceName string) *sql.DB {
-	db, err := sql.Open("postgres", dataSourceName)
+func Connect(dataSourceName string) {
+	var err error
+	database, err = sql.Open("postgres", dataSourceName)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	return db
 }
 
 // Close db
