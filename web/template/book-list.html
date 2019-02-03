@@ -5,8 +5,9 @@
     <body>
         <div>
             {{range .}}
-                <p>{{.Title}}</p>
-                <p>{{.Summary}}</p>
+                <h1>{{.Title}}</h1>
+                <p><b>ISBN:</b> <i>{{.ISBN}}</i></p>
+                <p><b>Summary:</b> {{.Summary}}</p>
             {{end}}
         </div>
     </body>

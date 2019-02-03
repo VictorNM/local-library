@@ -8,24 +8,30 @@ import (
 
 // Book DAO
 type Book struct {
-	Title   string
-	Summary string
+	ID       string
+	Title    string
+	AuthorID string
+	Summary  string
+	ISBN     string
 }
 
 // GetBooks return list of books in database
 func GetBooks() []Book {
 	db := database.GetDB()
-	rows, err := db.Query(`SELECT * FROM book`)
+	rows, err := db.Query(`SELECT * FROM books`)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	var books []Book
 	for rows.Next() {
+		var id string
 		var title string
+		var authorID string
 		var summary string
-		err = rows.Scan(&title, &summary)
-		book := Book{Title: title, Summary: summary}
+		var isbn string
+		err = rows.Scan(&id, &title, &authorID, &summary, &isbn)
+		book := Book{ID: id, Title: title, AuthorID: authorID, Summary: summary, ISBN: isbn}
 		books = append(books, book)
 	}
 	return books
