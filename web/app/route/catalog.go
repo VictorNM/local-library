@@ -21,6 +21,10 @@ func CatalogHandler(w http.ResponseWriter, r *http.Request) {
 		controller.CreateBook(w, r)
 	case "book/update":
 		controller.UpdateBook(w, r)
+	case "genres":
+		controller.GetGenres(w, r)
+	case "genre/create":
+		controller.CreateGenre(w, r)
 	default:
 		http.Error(w, "NOT FOUND", http.StatusNotFound)
 	}

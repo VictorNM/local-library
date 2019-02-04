@@ -6,7 +6,7 @@ import (
 	database "../shared"
 )
 
-// Book DAO
+// Book DTO
 type Book struct {
 	ID       string
 	Title    string
