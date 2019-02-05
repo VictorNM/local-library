@@ -36,11 +36,23 @@ func InsertGenre(genre Genre) string {
 	db := database.GetDB()
 
 	var lastInsertID string
-	err := db.QueryRow(`INSERT INTO genres VALUES ($1, $2) RETURNING genre_id;`, genre.ID, genre.Name).Scan(&lastInsertID)
+	err := db.QueryRow(`INSERT INTO genres (name) VALUES ($2) RETURNING genre_id;`, genre.Name).Scan(&lastInsertID)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	return lastInsertID
+}
+
+// FindGenreByID find genre by ID
+func FindGenreByID(id string) Genre {
+	db := database.GetDB()
+	genre := Genre{}
+	row := db.QueryRow(`SELECT * FROM genres WHERE genre_id=$1`, id)
+	err := row.Scan(&genre.ID, &genre.Name)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	return genre
 }

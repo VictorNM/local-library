@@ -3,29 +3,30 @@ package route
 import (
 	"log"
 	"net/http"
+	"regexp"
 
 	"../controller"
 )
 
+const (
+	pathCatalog = "/catalog/"
+	// subpaths
+	pathGenreList = "genres"
+	pathGenreView = "^genre/(.+)$"
+)
+
 // CatalogHandler route for "/catalog/"
 func CatalogHandler(w http.ResponseWriter, r *http.Request) {
-	catalog := r.URL.Path[len("/catalog/"):]
-	log.Printf("Method: %s  \t|\tPath: /catalog/%s", r.Method, catalog)
+	subpath := r.URL.Path[len(pathCatalog):]
+	log.Printf("Method: %s  \t|\tPath: /catalog/%s", r.Method, subpath)
 
-	switch catalog {
-	case "":
-		http.Redirect(w, r, catalog+"books", http.StatusFound)
-	case "books":
-		controller.GetBooks(w, r)
-	case "book/create":
-		controller.CreateBook(w, r)
-	case "book/update":
-		controller.UpdateBook(w, r)
-	case "genres":
+	genreView := regexp.MustCompile(pathGenreView)
+
+	if subpath == pathGenreList {
 		controller.GetGenres(w, r)
-	case "genre/create":
-		controller.CreateGenre(w, r)
-	default:
+	} else if genreView.MatchString(subpath) {
+		controller.GetGenre(w, r)
+	} else {
 		http.Error(w, "NOT FOUND", http.StatusNotFound)
 	}
 }
