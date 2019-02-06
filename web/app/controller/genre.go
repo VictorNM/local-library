@@ -10,7 +10,13 @@ import (
 
 // GetGenres handle request /catalog/genres
 func GetGenres(w http.ResponseWriter, r *http.Request) {
-	genres := model.GetGenres()
+	genres, err := model.GetGenres()
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	t, err := template.ParseFiles("./web/template/genre-list.html")
 	if err != nil {
 		log.Fatal(err.Error())
@@ -21,10 +27,16 @@ func GetGenres(w http.ResponseWriter, r *http.Request) {
 // GetGenre handle /catalog/genre/{$id}
 func GetGenre(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/catalog/genre/"):]
-	genre := model.FindGenreByID(id)
+	genre, err := model.FindGenreByID(id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	t, err := template.ParseFiles("./web/template/view-genre.html")
 	if err != nil {
-		log.Fatal(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	t.Execute(w, genre)
 }

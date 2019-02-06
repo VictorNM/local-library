@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"log"
 
 	database "../shared"
@@ -35,4 +36,25 @@ func GetBooks() []Book {
 		books = append(books, book)
 	}
 	return books
+}
+
+func parseBook(row *sql.Row) (*Book, error) {
+	var book = &Book{}
+	err := row.Scan(&book.ID, &book.Title, &book.AuthorID, &book.Summary, &book.ISBN)
+	return book, err
+}
+
+func parseBooks(rows *sql.Rows) ([]*Book, error) {
+	var books []*Book
+	for rows.Next() {
+		book := &Book{}
+		err := rows.Scan(&book.ID, &book.Title, &book.AuthorID, &book.Summary, &book.ISBN)
+
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, book)
+	}
+	return books, nil
 }

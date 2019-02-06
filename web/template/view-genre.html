@@ -5,7 +5,9 @@
     <body>
         <h1>{{.Name}}</h1>
         <div>
-            <p>List of books will be here</p>
+            {{range .Books}}
+                <p>{{.Title}}</p>
+            {{end}}
         </div>
     </body>
 </html>

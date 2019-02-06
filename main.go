@@ -24,6 +24,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// connect to db
+	log.Println("Connecting database...")
 	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", DatabaseUser, DatabasePassword, DatabaseName)
 	database.Connect(dbinfo)
 	defer database.Close()
@@ -31,8 +32,11 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/catalog/", route.CatalogHandler)
 
-	err := http.ListenAndServe(":8080", nil)
+	port := 8080
+	log.Printf("Server started at port: %d\n", port)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
 }
