@@ -13,11 +13,16 @@ import (
 
 // GetGenres handle /api/catalog/genres
 func GetGenres(w http.ResponseWriter, r *http.Request) {
-	genres, err := model.FindAllGenres()
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
+	genres := model.FindAllGenres()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recover in api.GetGenres", r)
+		}
+	}()
+	// if err != nil {
+	// 	log.Println(err.Error())
+	// 	return
+	// }
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(genres)
@@ -25,13 +30,13 @@ func GetGenres(w http.ResponseWriter, r *http.Request) {
 
 // GetGenre handle /api/catalog/genre/{id}
 func GetGenre(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	genre, err := model.FindGenreByID(id)
-	if err != nil {
-		log.Println(err.Error())
+	defer recoverIfError(func() {
 		w.WriteHeader(http.StatusNotFound)
-		return
-	}
+		json.NewEncoder(w).Encode("Error occur!")
+	})
+	id := mux.Vars(r)["id"]
+	genre := model.FindGenreByID(id)
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(genre)
@@ -70,7 +75,7 @@ func UpdateGenre(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	genre.ID = mux.Vars(r)["id"]
-	_, err = model.UpdateGenre(genre)
+	err = model.UpdateGenre(genre)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -92,4 +97,11 @@ func parseRequestToGenre(r *http.Request) (model.Genre, error) {
 		return genre, err
 	}
 	return genre, nil
+}
+
+func recoverIfError(f func()) {
+	if r := recover(); r != nil {
+		f()
+		log.Println("Recover due to error:", r)
+	}
 }
