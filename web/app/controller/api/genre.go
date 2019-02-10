@@ -39,14 +39,14 @@ func GetGenre(w http.ResponseWriter, r *http.Request) {
 
 // CreateGenre handle /api/catalog/genre/create
 func CreateGenre(w http.ResponseWriter, r *http.Request) {
-	genre := &model.Genre{}
+	var genre model.Genre
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 	r.Body.Close()
-	err = json.Unmarshal(body, genre)
+	err = json.Unmarshal(body, &genre)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -60,4 +60,36 @@ func CreateGenre(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(genre)
+}
+
+// UpdateGenre update genre
+func UpdateGenre(w http.ResponseWriter, r *http.Request) {
+	genre, err := parseRequestToGenre(r)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	genre.ID = mux.Vars(r)["id"]
+	_, err = model.UpdateGenre(genre)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(genre)
+}
+
+func parseRequestToGenre(r *http.Request) (model.Genre, error) {
+	var genre model.Genre
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		return genre, err
+	}
+	r.Body.Close()
+	err = json.Unmarshal(body, &genre)
+	if err != nil {
+		return genre, err
+	}
+	return genre, nil
 }

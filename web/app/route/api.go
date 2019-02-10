@@ -24,6 +24,12 @@ var apiRoutes = Routes{
 		Pattern:     "/catalog/genre/create",
 		HandlerFunc: api.CreateGenre,
 	},
+	Route{
+		Name:        "apiUpdateGenre",
+		Method:      "PUT",
+		Pattern:     "/catalog/genre/{id:[1-9][0-9]*}",
+		HandlerFunc: api.UpdateGenre,
+	},
 }
 
 func setAPIRouter(router *mux.Router) {

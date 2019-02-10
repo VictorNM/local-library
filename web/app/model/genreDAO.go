@@ -32,12 +32,21 @@ func FindGenreByID(id string) (Genre, error) {
 }
 
 // InsertGenre insert genre to db
-func InsertGenre(genre *Genre) (string, error) {
+func InsertGenre(genre Genre) (string, error) {
 	db := database.GetDB()
 	queryString := fmt.Sprintf(`INSERT INTO genres (name) VALUES ('%s') RETURNING genre_id`, genre.Name)
 	var insertID string
 	err := db.QueryRow(queryString).Scan(&insertID)
 	return insertID, err
+}
+
+// UpdateGenre update genre in db
+func UpdateGenre(genre Genre) (string, error) {
+	db := database.GetDB()
+	var updateID string
+	err := db.QueryRow(`UPDATE genres SET name=$1 WHERE genre_id=$2 RETURNING genre_id`, genre.Name, genre.ID).
+		Scan(&updateID)
+	return updateID, err
 }
 
 func parseGenres(rows *sql.Rows) (Genres, error) {
