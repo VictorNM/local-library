@@ -30,6 +30,12 @@ var apiRoutes = Routes{
 		Pattern:     "/catalog/genre/{id:[1-9][0-9]*}",
 		HandlerFunc: api.UpdateGenre,
 	},
+	Route{
+		Name:        "apiDeleteGenre",
+		Method:      "DELETE",
+		Pattern:     "/catalog/genre/{id:[1-9][0-9]*}",
+		HandlerFunc: api.DeleteGenre,
+	},
 }
 
 func setAPIRouter(router *mux.Router) {

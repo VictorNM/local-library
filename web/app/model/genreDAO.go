@@ -18,13 +18,9 @@ func FindAllGenres() Genres {
 	db := database.GetDB()
 	queryString := fmt.Sprintf("SELECT * FROM %s", genreTable)
 	rows, err := db.Query(queryString)
-	if err != nil {
-		panic(err)
-	}
+	panicIfError(err)
 	genres, err := parseGenres(rows)
-	if err != nil {
-		panic(err)
-	}
+	panicIfError(err)
 	return genres
 }
 
@@ -59,6 +55,19 @@ func UpdateGenre(genre Genre) {
 	affect, err := res.RowsAffected()
 	panicIfError(err)
 	fmt.Println(affect, "rows change")
+}
+
+// DeleteGenre delete genre in db
+func DeleteGenre(id string) {
+	db := database.GetDB()
+	log.Println("Deleting...")
+	stmt, err := db.Prepare(`DELETE FROM genres WHERE genre_id=$1`)
+	panicIfError(err)
+	res, err := stmt.Exec(id)
+	panicIfError(err)
+	affect, err := res.RowsAffected()
+	panicIfError(err)
+	fmt.Println(affect, "rows changed")
 }
 
 func parseGenres(rows *sql.Rows) (Genres, error) {

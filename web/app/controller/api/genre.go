@@ -54,6 +54,14 @@ func UpdateGenre(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(genre)
 }
 
+// DeleteGenre delete genre
+func DeleteGenre(w http.ResponseWriter, r *http.Request) {
+	defer handleError(w, r)
+	id := mux.Vars(r)["id"]
+	model.DeleteGenre(id)
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func parseRequestToGenre(r *http.Request) model.Genre {
 	var genre model.Genre
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
