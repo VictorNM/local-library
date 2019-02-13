@@ -1,8 +1,8 @@
 package api
 
 import (
-	"../../controller/api"
-	"../route"
+	"victornm/library/web/app/controller/api"
+	"victornm/library/web/app/route/route"
 )
 
 func getGenreRoutes() route.Routes {

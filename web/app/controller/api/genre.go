@@ -2,13 +2,17 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 
-	"../../model"
+	myjson "victornm/library/web/app/utils/json"
+
+	"victornm/library/web/app/model"
+
+	"victornm/library/web/app/utils/parser"
+
 	"github.com/gorilla/mux"
 )
 
@@ -16,9 +20,7 @@ import (
 func GetGenres(w http.ResponseWriter, r *http.Request) {
 	defer handleError(w, r)
 	genres := model.FindAllGenres()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(genres)
+	sendResponse(w, genres, "", http.StatusOK)
 }
 
 // GetGenre handle /api/catalog/genre/{id}
@@ -35,8 +37,10 @@ func GetGenre(w http.ResponseWriter, r *http.Request) {
 // CreateGenre handle /api/catalog/genre/create
 func CreateGenre(w http.ResponseWriter, r *http.Request) {
 	defer handleError(w, r)
-	genre := parseRequestToGenre(r)
-	id := model.InsertGenre(genre)
+	genre := &model.Genre{}
+	err := parser.ParseRequestBody(r, genre)
+	panicIfError(err)
+	id := model.InsertGenre(*genre)
 	genre.ID = id
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
@@ -76,16 +80,25 @@ func handleError(w http.ResponseWriter, r *http.Request) {
 	if recover := recover(); recover != nil {
 		log.Printf(`Recover due to error: "%s" from "%s"`, recover, r)
 
+		var message string
+
 		switch x := recover.(type) {
 		case string:
-			json.NewEncoder(w).Encode(x)
+			message = x
 		case error:
-			json.NewEncoder(w).Encode(x.Error())
+			message = x.Error()
 		default:
-			json.NewEncoder(w).Encode(errors.New("unknown error"))
+			message = "unknown error"
 		}
-
+		sendResponse(w, nil, message, http.StatusInternalServerError)
 	}
+}
+
+func sendResponse(w http.ResponseWriter, data interface{}, message string, status int) {
+	response := myjson.Response{Data: data, Message: message}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(response)
 }
 
 func panicIfError(err error) {

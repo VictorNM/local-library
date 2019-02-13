@@ -1,7 +1,8 @@
 package route
 
 import (
-	"./api"
+	"victornm/library/web/app/route/api"
+
 	"github.com/gorilla/mux"
 )
 

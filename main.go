@@ -7,8 +7,8 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"./web/app/database"
-	"./web/app/route"
+	"victornm/library/web/app/database"
+	"victornm/library/web/app/route"
 )
 
 // db info
